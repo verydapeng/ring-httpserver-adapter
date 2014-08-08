@@ -7,10 +7,13 @@
     {:uri (.getPath uri)
      :request-method :get}))
 
+(doseq [kv {:a 1 :b 2}] (prn kv))
 
 (defn- send-response [m ^HttpExchange he]
-  (let [{:keys [status] :or {status 200}} m]
-    (prn status)
+  (let [{:keys [status headers body] :or {status 200 headers {} body nil}} m]
+    (->> headers
+         (map #(let [[k v] %] (.. he (getResponseHeaders) (add k v))))
+         doall)
     (.sendResponseHeaders he status 0)
     (.. he (getResponseBody) (write (.getBytes "hello")))))
 
@@ -42,7 +45,8 @@
 
 (def server (start (fn [request] (do
                                    (prn "doing my work")
-                                   {:status 200}))))
+                                   {:status 200
+                                    :headers {"a" "b"}}))))
 
 (server)
 
