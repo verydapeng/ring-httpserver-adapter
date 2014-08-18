@@ -75,11 +75,15 @@
            (invoke h he))))
 
 
-(defn start [h]
-  (let [server (HttpServer/create)
-        ctx (.createContext server  "/")]
-    (.setHandler ctx (adapt-handler h))
-    (.bind server (InetSocketAddress. 9876) 128)
-    (.start server)
-    (fn []
-      (.stop server 0))))
+(defn start
+  "[h & {:port 1234}]"
+  ([h] (start h nil))
+  ([h config]
+   (let [server (HttpServer/create)
+         port (get config :port 9876)
+         ctx (.createContext server  "/")]
+     (.setHandler ctx (adapt-handler h))
+     (.bind server (InetSocketAddress. port) 128)
+     (.start server)
+     (fn []
+       (.stop server 0)))))
