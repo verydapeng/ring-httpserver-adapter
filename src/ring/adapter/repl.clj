@@ -1,9 +1,9 @@
-(in-ns ring.adapter.httpserver)
+(in-ns 'ring.adapter.httpserver)
 
 (def stop-server (start (fn [request] (do
                                    (prn request)
                                    {:status 200
-                                    :body (File. "/home/dapeng/Temp/aa.clj")
+                                    :body ["123" "456"]
                                     :headers {"a" "b"}}))))
 
 (stop-server)

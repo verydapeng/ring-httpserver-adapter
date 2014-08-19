@@ -33,7 +33,7 @@
    (string? body)
    (.write out (.getBytes body StandardCharsets/UTF_8))
 
-   (seq? body)
+   (sequential? body)
    (doseq [chunk body]
      (.write out (.getBytes (str chunk) StandardCharsets/UTF_8)))
 
@@ -65,6 +65,7 @@
   (let [request-map (build-request-map he)
         response-map (h request-map)]
     (send-response (or response-map {:status 404}) he)
+    (.. he (getResponseBody) (close))
     (.close he)))
 
 
@@ -86,4 +87,6 @@
      (.bind server (InetSocketAddress. port) 128)
      (.start server)
      (fn []
-       (.stop server 0)))))
+       (do
+         (.stop server 0)
+         (println "server shutdown completed"))))))
